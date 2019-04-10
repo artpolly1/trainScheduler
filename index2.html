@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Train Scheduler</title>
+        <script src="https://unpkg.com/popper.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+       
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <link rel='stylesheet' href="assets/css/style.css">
+
+  
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+
+    </head>
+
+    <body class='bg-white'> 
+
+        <div class='container'>
+            <div class='row'>
+                <div class='col'>
+
+<!--Jumbotron-->
+            <div class="jumbotron jumbotron-fluid bg-success mt-3 text-center">
+                    <div class="container">
+                      <h1 class="display-4">myTrainScheduler</h1>
+                      <!-- <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p> -->
+                    </div>
+                  </div>
+
+<!--Train Schedule -->
+                  <div class="card">
+                        <div class="card-header bg-sucess">
+                          Current Train Schedule 
+                        </div>
+                        <div class="card-body">
+                                <table class="table table-hover">
+                                    <h1 id='time'>Current Time</h1>
+                                        <thead>
+                                          <tr>
+                                            <th scope="col" id='trainName'>Train Name</th>
+                                            <th scope="col" id='destination'>Destination</th>
+                                            <th scope="col" id='frequency'>Frenquency(min)</th>
+                                            <th scope="col" id='nextTrain'>Next Train</th>
+                                            <th scope="col" id='minutesAway'>Minutes Away</th>
+                                          </tr>
+                                          </thead>
+                                         <tbody id='scheduleUpdate'>
+                                      </table>
+                              </div>
+                             </div>
+<!--Add train to schedule form-->
+<br/>
+<div class="card">
+        <div class="card-header bg-success">
+          Add Train
+        </div>
+        <div class="card-body">
+                <form> 
+                        <div class="form-group">
+                          <label for="trainName">Train Name</label>
+                          <input type="text" class="form-control" id="inputTrainName" aria-describedby="enterTrainName" placeholder="5th Ward RailRoad">
+                          <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                        </div>
+
+                        <div class="form-group">
+                                <label for="destination">Destination</label>
+                                <input type="text" class="form-control" id="inputDestination" aria-describedby="enterDestination" placeholder="Thunder Alley, OKC">
+                                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                        </div>
+
+                        <div class="form-group">
+                                <label for="trainTime">Train Time (HH:mm - military time)</label>
+                                <input type="text" class="form-control" id="inputTrainTime" aria-describedby="time train leves station" placeholder="Enter Time Here">
+                                <small id="improperTimeInput" class="form-validation"></small>
+                        </div>
+
+                        <div class="form-group">
+                                <label for="trainFrequency">Frequency (minutes)</label>
+                                <small id="notANumber" class="form-validation"></small>
+                                <input type="text" class="form-control" id="frequencyInMinutes" aria-describedby="how frequent will trains arrive to the station" placeholder="Frequency">
+                                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                        </div>
+                        <!-- <div class="form-group form-check">
+                          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                          <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                        </div> -->
+                        <p id="missingInformation" class="form-validation"></p>
+                        <button type="submit" class="btn btn-primary mt-1" id='submitButton'>Submit</button>
+                      </form>
+        </div>
+      </div>    
+<!--Show modal when train is sucessfully added-->
+      <div class="modal" id='trainAdded' tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-warning">
+                  <h5 class="modal-title">Train successfully added</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="addModal ml-3 mt-3">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+<!--Show modal when train is sucessfully DELETED-->
+      <div class="modal" id='trainDeleted' tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-warning">
+                  <h5 class="modal-title">Train Deleted</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="deleteModal ml-3 mt-3">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+                
+
+                </div>
+              </div>
+            </div>
+
+
+
+
+       
+
+
+
+
+
+
+       <script src="assets/javascript/logic.js"></script>
+    </body>
+</html>
